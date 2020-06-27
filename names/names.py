@@ -19,100 +19,61 @@ duplicates = []  # Return the list of duplicates in this data structure
 #             duplicates.append(name_1)
 
 
-class Node:
-    def __init__(self, value=None, next_node=None):
+class BSTNode:
+    def __init__(self, value):
         self.value = value
-        self.next_node = next_node
+        self.left = None
+        self.right = None
 
+    # Insert the given value into the tree
+    def insert(self, value):
+        if value < self.value:
+            if self.left is None:
+                self.left = BSTNode(value)
+            else:
+                self.left.insert(value)
+        if value >= self.value:
+            if self.right is None:
+                self.right = BSTNode(value)
+            else:
+                self.right.insert(value)
 
-class LinkedList:
-    def __init__(self):
-        self.head = None  # Stores a node, that corresponds to our first node in the list
-        self.tail = None  # stores a node that is the end of the list
-
-    def add_to_head(self, value):
-        # create a node to add
-        new_node = Node(value)
-        # check if list is empty
-        if self.head is None and self.tail is None:
-            self.head = new_node
-            self.tail = new_node
+    # Return True if the tree contains the value
+    # False if it does not
+    def contains(self, target):
+        if self.value == target:
+            return True
+        if self.value < target:
+            if self.right is None:
+                return False
+            found = self.right.contains(target)
         else:
-            # new_node should point to current head
-            new_node.next_node = self.head
-            # move head to new node
-            self.head = new_node
+            if self.left is None:
+                return False
+            found = self.left.contains(target)
+        return found
 
-    def add_to_tail(self, value):
-        # create a node to add
-        new_node = Node(value)
-        # check if list is empty
-        if self.head is None and self.tail is None:
-            self.head = new_node
-            self.tail = new_node
-        else:
-            # point the node at the current tail, to the new node
-            self.tail.next_node = new_node
-            self.tail = new_node
-
-    # remove the head and return its value
-    def remove_head(self):
-        # if list is empty, do nothing
-        if not self.head:
-            return None
-        # if list only has one element, set head and tail to None
-        if self.head.next_node is None:
-            head_value = self.head.value
-            self.head = None
-            self.tail = None
-            return head_value
-        # otherwise we have more elements in the list
-        head_value = self.head.value
-        self.head = self.head.next_node
-        return head_value
-
-    def contains(self, value):
-        if self.head is None:
-            return False
-
-        # Loop through each node, until we see the value, or we cannot go further
-        current_node = self.head
-
-        while current_node is not None:
-            # check if this is the node we are looking for
-            if current_node.value == value:
-                return True
-
-            # otherwise, go to the next node
-            current_node = current_node.next_node
-        return False
-
+    # Return the maximum value found in the tree
     def get_max(self):
-        # if list is empty, do nothing
-        if not self.head:
-            return None
+        if self.right is None:
+            return self.value
+        return self.right.get_max()
+        
+    # Call the function `fn` on the value of each node
+    def for_each(self, fn):
+        fn(self.value)
+        if self.left:
+            self.left.for_each(fn)
+        if self.right:
+            self.right.for_each(fn)
 
-        # if list is one element, return that element
-        if self.head.next_node is None:
-            return self.head.value
-
-        current_node = self.head
-        max_num = self.head.value
-
-        while current_node is not None:
-            # check if this is the node we are looking for
-            if current_node.value > max_num:
-                max_num = current_node.value
-
-            # otherwise, go to the next node
-            current_node = current_node.next_node
-        return max_num
-
-newList = LinkedList()
+bst = None
 for name in names_1:
-    newList.add_to_head(name)
+    if bst is None:
+        bst = BSTNode(name)
+    bst.insert(name)
 for name in names_2:
-    if newList.contains(name):
+    if bst.contains(name):
         duplicates.append(name)
 
 end_time = time.time()
